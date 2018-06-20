@@ -7,6 +7,7 @@ import (
 	"runtime"
 	"strings"
 	"time"
+	"strconv"
 
 	redigo "github.com/garyburd/redigo/redis"
 )
@@ -361,21 +362,20 @@ func goRoutineLogStackTrace(operation string) {
 	n := runtime.Callers(0, pc)
 	m := make(map[string]int, n)
 	frames := runtime.CallersFrames(pc)
+	trace := ""
 	for {
 		frame, more := frames.Next()
 		if frame.Function != "" {
+			trace = frame.Function + ":" + strconv.Itoa(frame.Line) + ":" + trace
 			m[frame.Function] = frame.Line
 		}
 		if !more {
 			break
 		}
 	}
-	f, _ := os.Create("/tmp/stacktrace.log")
+	filename:= "/tmp/stacktrace.log"
+	f, _ := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, 0644)
 	defer f.Close()
-	trace := ""
-	for fun, line := range m {
-		trace += fun + ":" + line + ":"
-	}
 	trace += operation + "\n"
 	f.WriteString(trace)
 }
