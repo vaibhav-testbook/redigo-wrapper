@@ -3,12 +3,11 @@ package redis
 import (
 	"errors"
 	"log"
-	"os"
 	"runtime"
 	"strings"
 	"time"
 	"strconv"
-
+	"newtb/logger"
 	redigo "github.com/garyburd/redigo/redis"
 )
 
@@ -130,100 +129,100 @@ func SplitKey(key string) []string {
 	return strings.Split(key, conf.KEY_DELIMITER)
 }
 func Expire(RConn *redigo.Conn, key string, ttl int) (interface{}, error) {
-	go goRoutineLogStackTrace(REDIS_KEYWORD_EXPIRE)
+	goRoutineLogStackTrace(REDIS_KEYWORD_EXPIRE)
 	return (*RConn).Do(REDIS_KEYWORD_EXPIRE, key, ttl)
 }
 func Persist(RConn *redigo.Conn, key string) (interface{}, error) {
-	go goRoutineLogStackTrace(REDIS_KEYWORD_PERSIST)
+	goRoutineLogStackTrace(REDIS_KEYWORD_PERSIST)
 	return (*RConn).Do(REDIS_KEYWORD_PERSIST, key)
 }
 
 func Delete(RConn *redigo.Conn, key string) (interface{}, error) {
-	go goRoutineLogStackTrace(REDIS_KEYWORD_DELETE)
+	goRoutineLogStackTrace(REDIS_KEYWORD_DELETE)
 	return (*RConn).Do(REDIS_KEYWORD_DELETE, key)
 }
 func Set(RConn *redigo.Conn, key string, data interface{}) (interface{}, error) {
 	//set
-	go goRoutineLogStackTrace(REDIS_KEYWORD_SET)
+	goRoutineLogStackTrace(REDIS_KEYWORD_SET)
 	return (*RConn).Do(REDIS_KEYWORD_SET, key, data)
 }
 func SetNX(RConn *redigo.Conn, key string, data interface{}) (interface{}, error) {
-	go goRoutineLogStackTrace(REDIS_KEYWORD_SETNX)
+	goRoutineLogStackTrace(REDIS_KEYWORD_SETNX)
 	return (*RConn).Do(REDIS_KEYWORD_SETNX, key, data)
 }
 func SetEx(RConn *redigo.Conn, key string, ttl int, data interface{}) (interface{}, error) {
-	go goRoutineLogStackTrace(REDIS_KEYWORD_SETEX)
+	goRoutineLogStackTrace(REDIS_KEYWORD_SETEX)
 	return (*RConn).Do(REDIS_KEYWORD_SETEX, key, ttl, data)
 }
 func Get(RConn *redigo.Conn, key string) (interface{}, error) {
 	//get
-	go goRoutineLogStackTrace(REDIS_KEYWORD_GET)
+	goRoutineLogStackTrace(REDIS_KEYWORD_GET)
 	return (*RConn).Do(REDIS_KEYWORD_GET, key)
 }
 func GetTTL(RConn *redigo.Conn, key string) (time.Duration, error) {
-	go goRoutineLogStackTrace(REDIS_KEYWORD_TTL)
+	goRoutineLogStackTrace(REDIS_KEYWORD_TTL)
 	ttl, err := redigo.Int64((*RConn).Do(REDIS_KEYWORD_TTL, key))
 	return time.Duration(ttl) * time.Second, err
 }
 func GetString(RConn *redigo.Conn, key string) (string, error) {
-	go goRoutineLogStackTrace(REDIS_KEYWORD_GET)
+	goRoutineLogStackTrace(REDIS_KEYWORD_GET)
 	return redigo.String((*RConn).Do(REDIS_KEYWORD_GET, key))
 }
 func GetInt(RConn *redigo.Conn, key string) (int, error) {
-	go goRoutineLogStackTrace(REDIS_KEYWORD_GET)
+	goRoutineLogStackTrace(REDIS_KEYWORD_GET)
 	return redigo.Int((*RConn).Do(REDIS_KEYWORD_GET, key))
 }
 func GetStringLength(RConn *redigo.Conn, key string) (int, error) {
-	go goRoutineLogStackTrace(REDIS_KEYWORD_STRLEN)
+	goRoutineLogStackTrace(REDIS_KEYWORD_STRLEN)
 	return redigo.Int((*RConn).Do(REDIS_KEYWORD_STRLEN, key))
 }
 func ZAdd(RConn *redigo.Conn, key string, score float64, data interface{}) (interface{}, error) {
-	go goRoutineLogStackTrace(REDIS_KEYWORD_ZADD)
+	goRoutineLogStackTrace(REDIS_KEYWORD_ZADD)
 	return (*RConn).Do(REDIS_KEYWORD_ZADD, key, score, data)
 }
 func ZRem(RConn *redigo.Conn, key string, data interface{}) (interface{}, error) {
-	go goRoutineLogStackTrace(REDIS_KEYWORD_ZREM)
+	goRoutineLogStackTrace(REDIS_KEYWORD_ZREM)
 	return (*RConn).Do(REDIS_KEYWORD_ZREM, key, data)
 }
 func ZRange(RConn *redigo.Conn, key string, start int, end int, withScores bool) ([]interface{}, error) {
-	go goRoutineLogStackTrace(REDIS_KEYWORD_ZRANGE)
+	goRoutineLogStackTrace(REDIS_KEYWORD_ZRANGE)
 	if withScores {
 		return redigo.Values((*RConn).Do(REDIS_KEYWORD_ZRANGE, key, start, end, REDIS_KEYWORD_WITHSCORES))
 	}
 	return redigo.Values((*RConn).Do(REDIS_KEYWORD_ZRANGE, key, start, end))
 }
 func SAdd(RConn *redigo.Conn, setName string, data interface{}) (interface{}, error) {
-	go goRoutineLogStackTrace(REDIS_KEYWORD_SADD)
+	goRoutineLogStackTrace(REDIS_KEYWORD_SADD)
 	return (*RConn).Do(REDIS_KEYWORD_SADD, setName, data)
 }
 func SCard(RConn *redigo.Conn, setName string) (int64, error) {
-	go goRoutineLogStackTrace(REDIS_KEYWORD_SCARD)
+	goRoutineLogStackTrace(REDIS_KEYWORD_SCARD)
 	return redigo.Int64((*RConn).Do(REDIS_KEYWORD_SCARD, setName))
 }
 func SIsMember(RConn *redigo.Conn, setName string, data interface{}) (bool, error) {
-	go goRoutineLogStackTrace(REDIS_KEYWORD_SISMEMBER)
+	goRoutineLogStackTrace(REDIS_KEYWORD_SISMEMBER)
 	return redigo.Bool((*RConn).Do(REDIS_KEYWORD_SISMEMBER, setName, data))
 }
 func SMembers(RConn *redigo.Conn, setName string) ([]string, error) {
-	go goRoutineLogStackTrace(REDIS_KEYWORD_SMEMBERS)
+	goRoutineLogStackTrace(REDIS_KEYWORD_SMEMBERS)
 	return redigo.Strings((*RConn).Do(REDIS_KEYWORD_SMEMBERS, setName))
 }
 func SRem(RConn *redigo.Conn, setName string, data interface{}) (interface{}, error) {
-	go goRoutineLogStackTrace(REDIS_KEYWORD_SREM)
+	goRoutineLogStackTrace(REDIS_KEYWORD_SREM)
 	return (*RConn).Do(REDIS_KEYWORD_SREM, setName, data)
 }
 func HSet(RConn *redigo.Conn, key string, HKey string, data interface{}) (interface{}, error) {
-	go goRoutineLogStackTrace(REDIS_KEYWORD_HSET)
+	goRoutineLogStackTrace(REDIS_KEYWORD_HSET)
 	return (*RConn).Do(REDIS_KEYWORD_HSET, key, HKey, data)
 }
 
 func HGet(RConn *redigo.Conn, key string, HKey string) (interface{}, error) {
-	go goRoutineLogStackTrace(REDIS_KEYWORD_HGET)
+	goRoutineLogStackTrace(REDIS_KEYWORD_HGET)
 	return (*RConn).Do(REDIS_KEYWORD_HGET, key, HKey)
 }
 
 func HMGet(RConn *redigo.Conn, key string, hashKeys ...string) ([]interface{}, error) {
-	go goRoutineLogStackTrace(REDIS_KEYWORD_HMGET)
+	goRoutineLogStackTrace(REDIS_KEYWORD_HMGET)
 	ret, err := (*RConn).Do(REDIS_KEYWORD_HMGET, key, hashKeys)
 	if err != nil {
 		return nil, err
@@ -244,63 +243,63 @@ func HMSet(RConn *redigo.Conn, key string, hashKeys []string, vals []interface{}
 	for i, v := range hashKeys {
 		input = append(input, v, vals[i])
 	}
-	go goRoutineLogStackTrace(REDIS_KEYWORD_HMSET)
+	goRoutineLogStackTrace(REDIS_KEYWORD_HMSET)
 	return (*RConn).Do(REDIS_KEYWORD_HMSET, input...)
 }
 
 func HGetString(RConn *redigo.Conn, key string, HKey string) (string, error) {
-	go goRoutineLogStackTrace(REDIS_KEYWORD_HGET)
+	goRoutineLogStackTrace(REDIS_KEYWORD_HGET)
 	return redigo.String((*RConn).Do(REDIS_KEYWORD_HGET, key, HKey))
 }
 func HGetFloat(RConn *redigo.Conn, key string, HKey string) (float64, error) {
-	go goRoutineLogStackTrace(REDIS_KEYWORD_HGET)
+	goRoutineLogStackTrace(REDIS_KEYWORD_HGET)
 	f, err := redigo.Float64((*RConn).Do(REDIS_KEYWORD_HGET, key, HKey))
 	return float64(f), err
 }
 func HGetInt(RConn *redigo.Conn, key string, HKey string) (int, error) {
-	go goRoutineLogStackTrace(REDIS_KEYWORD_HGET)
+	goRoutineLogStackTrace(REDIS_KEYWORD_HGET)
 	return redigo.Int((*RConn).Do(REDIS_KEYWORD_HGET, key, HKey))
 }
 func HGetInt64(RConn *redigo.Conn, key string, HKey string) (int64, error) {
-	go goRoutineLogStackTrace(REDIS_KEYWORD_HGET)
+	goRoutineLogStackTrace(REDIS_KEYWORD_HGET)
 	return redigo.Int64((*RConn).Do(REDIS_KEYWORD_HGET, key, HKey))
 }
 func HGetBool(RConn *redigo.Conn, key string, HKey string) (bool, error) {
-	go goRoutineLogStackTrace(REDIS_KEYWORD_HGET)
+	goRoutineLogStackTrace(REDIS_KEYWORD_HGET)
 	return redigo.Bool((*RConn).Do(REDIS_KEYWORD_HGET, key, HKey))
 }
 func HDel(RConn *redigo.Conn, key string, HKey string) (interface{}, error) {
-	go goRoutineLogStackTrace(REDIS_KEYWORD_HDEL)
+	goRoutineLogStackTrace(REDIS_KEYWORD_HDEL)
 	return (*RConn).Do(REDIS_KEYWORD_HDEL, key, HKey)
 }
 func HGetAll(RConn *redigo.Conn, key string) (interface{}, error) {
-	go goRoutineLogStackTrace(REDIS_KEYWORD_HGETALL)
+	goRoutineLogStackTrace(REDIS_KEYWORD_HGETALL)
 	return (*RConn).Do(REDIS_KEYWORD_HGETALL, key)
 }
 
 func HGetAllValues(RConn *redigo.Conn, key string) ([]interface{}, error) {
-	go goRoutineLogStackTrace(REDIS_KEYWORD_HGETALL)
+	goRoutineLogStackTrace(REDIS_KEYWORD_HGETALL)
 	return redigo.Values((*RConn).Do(REDIS_KEYWORD_HGETALL, key))
 }
 func HGetAllString(RConn *redigo.Conn, key string) ([]string, error) {
-	go goRoutineLogStackTrace(REDIS_KEYWORD_HGETALL)
+	goRoutineLogStackTrace(REDIS_KEYWORD_HGETALL)
 	return redigo.Strings((*RConn).Do(REDIS_KEYWORD_HGETALL, key))
 }
 
 // NOTE: Use this in production environment with extreme care.
 // Read more here:https://redis.io/commands/keys
 func Keys(RConn *redigo.Conn, pattern string) ([]string, error) {
-	go goRoutineLogStackTrace(REDIS_KEYWORD_KEYS)
+	goRoutineLogStackTrace(REDIS_KEYWORD_KEYS)
 	return redigo.Strings((*RConn).Do(REDIS_KEYWORD_KEYS, pattern))
 }
 
 func HKeys(RConn *redigo.Conn, key string) ([]string, error) {
-	go goRoutineLogStackTrace(REDIS_KEYWORD_HKEYS)
+	goRoutineLogStackTrace(REDIS_KEYWORD_HKEYS)
 	return redigo.Strings((*RConn).Do(REDIS_KEYWORD_HKEYS, key))
 }
 
 func Exists(RConn *redigo.Conn, key string) (bool, error) {
-	go goRoutineLogStackTrace(REDIS_KEYWORD_EXISTS)
+	goRoutineLogStackTrace(REDIS_KEYWORD_EXISTS)
 	count, err := redigo.Int((*RConn).Do(REDIS_KEYWORD_EXISTS, key))
 	if count == 0 {
 		return false, err
@@ -310,32 +309,32 @@ func Exists(RConn *redigo.Conn, key string) (bool, error) {
 }
 
 func Incr(RConn *redigo.Conn, key string) (int64, error) {
-	go goRoutineLogStackTrace(REDIS_KEYWORD_INCR)
+	goRoutineLogStackTrace(REDIS_KEYWORD_INCR)
 	return redigo.Int64((*RConn).Do(REDIS_KEYWORD_INCR, key))
 }
 
 func Decr(RConn *redigo.Conn, key string) (int64, error) {
-	go goRoutineLogStackTrace(REDIS_KEYWORD_DECR)
+	goRoutineLogStackTrace(REDIS_KEYWORD_DECR)
 	return redigo.Int64((*RConn).Do(REDIS_KEYWORD_DECR, key))
 }
 
 func IncrBy(RConn *redigo.Conn, key string, incBy int64) (int64, error) {
-	go goRoutineLogStackTrace(REDIS_KEYWORD_INCRBY)
+	goRoutineLogStackTrace(REDIS_KEYWORD_INCRBY)
 	return redigo.Int64((*RConn).Do(REDIS_KEYWORD_INCRBY, key, incBy))
 }
 
 func DecrBy(RConn *redigo.Conn, key string, decrBy int64) (int64, error) {
-	go goRoutineLogStackTrace(REDIS_KEYWORD_DECRBY)
+	goRoutineLogStackTrace(REDIS_KEYWORD_DECRBY)
 	return redigo.Int64((*RConn).Do(REDIS_KEYWORD_DECRBY, key))
 }
 
 func IncrByFloat(RConn *redigo.Conn, key string, incBy float64) (float64, error) {
-	go goRoutineLogStackTrace(REDIS_KEYWORD_INCRBYFLOAT)
+	goRoutineLogStackTrace(REDIS_KEYWORD_INCRBYFLOAT)
 	return redigo.Float64((*RConn).Do(REDIS_KEYWORD_INCRBYFLOAT, key, incBy))
 }
 
 func DecrByFloat(RConn *redigo.Conn, key string, decrBy float64) (float64, error) {
-	go goRoutineLogStackTrace(REDIS_KEYWORD_DECRBYFLOAT)
+	goRoutineLogStackTrace(REDIS_KEYWORD_DECRBYFLOAT)
 	return redigo.Float64((*RConn).Do(REDIS_KEYWORD_DECRBYFLOAT, key, decrBy))
 }
 
@@ -343,12 +342,12 @@ func Scan(RConn *redigo.Conn, cursor int64, pattern string, count int64) (int64,
 	var items []string
 	var newCursor int64
 
-	go goRoutineLogStackTrace("SCAN")
+	goRoutineLogStackTrace("SCAN")
 	values, err := redigo.Values((*RConn).Do("SCAN", cursor, "MATCH", pattern, "COUNT", count))
 	if err != nil {
 		return 0, nil, err
 	}
-	go goRoutineLogStackTrace("SCAN")
+	goRoutineLogStackTrace("SCAN")
 	values, err = redigo.Scan(values, &newCursor, &items)
 	if err != nil {
 		return 0, nil, err
@@ -366,16 +365,14 @@ func goRoutineLogStackTrace(operation string) {
 	for {
 		frame, more := frames.Next()
 		if frame.Function != "" {
-			trace = frame.Function + ":" + strconv.Itoa(frame.Line) + ":" + trace
+			if(strings.Contains(frame.Function , "newtb")){
+				trace = frame.Function + ":" + strconv.Itoa(frame.Line) + ":" + trace
+			}
 			m[frame.Function] = frame.Line
 		}
 		if !more {
 			break
 		}
 	}
-	filename:= "/tmp/stacktrace.log"
-	f, _ := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, 0644)
-	defer f.Close()
-	trace += operation + "\n"
-	f.WriteString(trace)
+	logger.Infoln("REDIS CONNECTION INFO : ", trace)
 }
