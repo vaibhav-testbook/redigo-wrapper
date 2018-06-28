@@ -7,8 +7,10 @@ import (
 	"strings"
 	"time"
 	"strconv"
+	"newtb/TBConstants"
 	"newtb/logger"
 	redigo "github.com/garyburd/redigo/redis"
+	"fmt"
 )
 
 const (
@@ -374,5 +376,11 @@ func goRoutineLogStackTrace(operation string) {
 			break
 		}
 	}
+	f, err := logger.Init(TBConstants.LOG_REDIS_CONN, TBConstants.CUR_ENV_TITLE == TBConstants.ENV_PRODUCTION)
+	if err != nil {
+		fmt.Println("Cant open file=", TBConstants.LOG_REDIS_CONN)
+		return
+	}
+	defer f.Close()
 	logger.Infoln("REDIS CONNECTION INFO : ", trace)
 }
