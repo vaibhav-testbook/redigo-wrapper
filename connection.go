@@ -374,6 +374,6 @@ func goRoutineLogStackTrace(operation string) {
 			break
 		}
 	}
-	trace += operation
+	trace += " " + operation
 	logger.Infoln("REDIS CONNECTION INFO : ", trace)
 }
