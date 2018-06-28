@@ -382,5 +382,6 @@ func goRoutineLogStackTrace(operation string) {
 		return
 	}
 	defer f.Close()
+	trace += " " + operation
 	logger.Infoln("REDIS CONNECTION INFO : ", trace)
 }
