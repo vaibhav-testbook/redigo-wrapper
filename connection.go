@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 	"strconv"
-	"newtb/logger"
+	//"newtb/logger"
 	redigo "github.com/garyburd/redigo/redis"
 )
 
@@ -375,5 +375,5 @@ func goRoutineLogStackTrace(operation string) {
 		}
 	}
 	trace += " " + operation
-	logger.Infoln("REDIS CONNECTION: INFO: ", trace)
+	//logger.Infoln("REDIS CONNECTION: INFO: ", trace)
 }
