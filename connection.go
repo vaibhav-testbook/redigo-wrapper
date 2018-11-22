@@ -18,7 +18,7 @@ const (
 	REDIS_KEYWORD_SMEMBERS        = "SMEMBERS"
 	REDIS_KEYWORD_SREM            = "SREM"
 	REDIS_KEYWORD_MSET            = "MSET"
-	REDIS_KEYWORD_MGET            = "MSET"
+	REDIS_KEYWORD_MGET            = "MGET"
 	REDIS_KEYWORD_HSET            = "HSET"
 	REDIS_KEYWORD_HGET            = "HGET"
 	REDIS_KEYWORD_HMSET           = "HMSET"
