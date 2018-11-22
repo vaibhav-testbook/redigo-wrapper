@@ -4,9 +4,9 @@ import (
 	"errors"
 	"log"
 	"runtime"
+	"strconv"
 	"strings"
 	"time"
-	"strconv"
 	//"newtb/logger"
 	redigo "github.com/garyburd/redigo/redis"
 )
@@ -17,6 +17,8 @@ const (
 	REDIS_KEYWORD_SISMEMBER       = "SISMEMBER"
 	REDIS_KEYWORD_SMEMBERS        = "SMEMBERS"
 	REDIS_KEYWORD_SREM            = "SREM"
+	REDIS_KEYWORD_MSET            = "MSET"
+	REDIS_KEYWORD_MGET            = "MSET"
 	REDIS_KEYWORD_HSET            = "HSET"
 	REDIS_KEYWORD_HGET            = "HGET"
 	REDIS_KEYWORD_HMSET           = "HMSET"
@@ -154,10 +156,34 @@ func SetEx(RConn *redigo.Conn, key string, ttl int, data interface{}) (interface
 	goRoutineLogStackTrace(REDIS_KEYWORD_SETEX)
 	return (*RConn).Do(REDIS_KEYWORD_SETEX, key, ttl, data)
 }
+func MSet(RConn *redigo.Conn, keyValuePair map[string]interface{}) (interface{}, error) {
+	if len(keyValuePair) == 0 {
+		var ret interface{}
+		return ret, errors.New("bad length")
+	}
+	input := []interface{}{}
+	for key, value := range keyValuePair {
+		input = append(input, key, value)
+	}
+	goRoutineLogStackTrace(REDIS_KEYWORD_MSET)
+	return (*RConn).Do(REDIS_KEYWORD_MSET, input...)
+}
 func Get(RConn *redigo.Conn, key string) (interface{}, error) {
 	//get
 	goRoutineLogStackTrace(REDIS_KEYWORD_GET)
 	return (*RConn).Do(REDIS_KEYWORD_GET, key)
+}
+func MGet(RConn *redigo.Conn, keys ...string) ([]interface{}, error) {
+	goRoutineLogStackTrace(REDIS_KEYWORD_MGET)
+	resp, err := (*RConn).Do(REDIS_KEYWORD_MGET, keys)
+	if err != nil {
+		return []interface{}{}, err
+	}
+	respArr, ok := resp.([]interface{})
+	if !ok {
+		return []interface{}{}, errors.New("Result not an array")
+	}
+	return respArr, nil
 }
 func GetTTL(RConn *redigo.Conn, key string) (time.Duration, error) {
 	goRoutineLogStackTrace(REDIS_KEYWORD_TTL)
@@ -365,7 +391,7 @@ func goRoutineLogStackTrace(operation string) {
 	for {
 		frame, more := frames.Next()
 		if frame.Function != "" {
-			if(strings.Contains(frame.Function , "newtb")){
+			if strings.Contains(frame.Function, "newtb") {
 				trace = frame.Function + ":" + strconv.Itoa(frame.Line) + ":" + trace
 			}
 			m[frame.Function] = frame.Line
