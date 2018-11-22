@@ -48,6 +48,9 @@ const (
 	REDIS_KEYWORD_DECRBY          = "DECRBY"
 	REDIS_KEYWORD_INCRBYFLOAT     = "INCRBYFLOAT"
 	REDIS_KEYWORD_DECRBYFLOAT     = "DECRBYFLOAT"
+
+	REDIS_KEYWORD_MULTI = "MULTI"
+	REDIS_KEYWORD_EXEC  = "EXEC"
 )
 
 type Config struct {
@@ -134,6 +137,14 @@ func Expire(RConn *redigo.Conn, key string, ttl int) (interface{}, error) {
 	goRoutineLogStackTrace(REDIS_KEYWORD_EXPIRE)
 	return (*RConn).Do(REDIS_KEYWORD_EXPIRE, key, ttl)
 }
+func ExpireMultipleKeys(RConn *redigo.Conn, keyValuePair map[string]interface{}, ttl int) {
+	(*RConn).Send(REDIS_KEYWORD_MULTI)
+	for key, _ := range keyValuePair {
+		(*RConn).Send(REDIS_KEYWORD_EXPIRE, key, ttl)
+	}
+	(*RConn).Do(REDIS_KEYWORD_EXEC)
+	return
+}
 func Persist(RConn *redigo.Conn, key string) (interface{}, error) {
 	goRoutineLogStackTrace(REDIS_KEYWORD_PERSIST)
 	return (*RConn).Do(REDIS_KEYWORD_PERSIST, key)
@@ -167,6 +178,24 @@ func MSet(RConn *redigo.Conn, keyValuePair map[string]interface{}) (interface{},
 	}
 	goRoutineLogStackTrace(REDIS_KEYWORD_MSET)
 	return (*RConn).Do(REDIS_KEYWORD_MSET, input...)
+}
+func MSetEx(RConn *redigo.Conn, keyValuePair map[string]interface{}, ttl int) (interface{}, error) {
+	if len(keyValuePair) == 0 {
+		var ret interface{}
+		return ret, errors.New("bad length")
+	}
+	input := []interface{}{}
+	for key, value := range keyValuePair {
+		input = append(input, key, value)
+	}
+	goRoutineLogStackTrace(REDIS_KEYWORD_MSET)
+	resp, err := (*RConn).Do(REDIS_KEYWORD_MSET, input...)
+	if err != nil {
+		var ret interface{}
+		return ret, err
+	}
+	go ExpireMultipleKeys(RConn, keyValuePair, ttl)
+	return resp, err
 }
 func Get(RConn *redigo.Conn, key string) (interface{}, error) {
 	//get
